@@ -1,0 +1,27 @@
+{
+  "name": "gulp-css-hairline",
+  "version": "1.0.0",
+  "description": "Dispose with the CSS border pixels",
+  "main": "./src/index.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "mocha --reporter spec"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/caoren/gulp-css-hairline.git"
+  },
+  "keywords": [
+    "gulpplugin",
+    "hairline",
+    "css"
+  ],
+  "author": "caoren",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/caoren/gulp-css-hairline/issues"
+  },
+  "homepage": "https://github.com/caoren/gulp-css-hairline"
+}
