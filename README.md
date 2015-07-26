@@ -1,7 +1,6 @@
 # gulp-css-hairline
 
-> Dispose with the CSS border pixels
-> refer to [CSS retina hairline](http://dieulot.net/css-retina-hairline)
+> Dispose with the CSS border pixels, refer to [CSS retina hairline](http://dieulot.net/css-retina-hairline)
 
 
 ## Install
