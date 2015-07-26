@@ -2,7 +2,7 @@
 var gutil = require('gulp-util');
 var through = require('through2');
 
-var regBorder = /([\s\S]*?)\{[\s\S]*border-?(width|left|right|bottom|top)?\s*:\s*(.*);(?!.*\/\*hairline:skip\*\/)/i;
+var regBorder = /([\s\S]*?)\{[\s\S]*border-?(width|left|right|bottom|top)?-?(width)?\s*:\s*(.*);(?!.*\/\*hairline:skip\*\/)/i;
 var regSpace = /\s/g;
 var regWidth = /(\d+)px/i;
 
@@ -22,7 +22,8 @@ function gulpCssHairline(option){
             var contentArr = content.split('}');
             var tteam;
             var cls;
-            var prop;
+            var prop1;
+            var prop2;
             var width;
             var addStr;
             var addText = [];
@@ -31,24 +32,34 @@ function gulpCssHairline(option){
                 if(tteam != null){
                     //.xxx , .yyy
                     cls = tteam[1].replace(regSpace,'').split(',');
-                    cls.map(function(item,index){
+                    cls = cls.map(function(item,index){
                         return htmlCls + ' ' + item;
                     });
                     //undefined,width,top,bottom,left,right
-                    prop = tteam[2];
-                    width = tteam[3].match(regWidth);
-                    width = width != null ? width[1] : 0;
+                    prop1 = tteam[2];
+                    prop2 = tteam[3];
+                    width = tteam[4].match(regWidth);
+                    width = width != null ? parseInt(width[1],10) : 0;
                     // 0px do nothing
-                    if(width != 0){
+                    if(width >= 1){
                         addStr = cls.join(',');
                         addStr += '{';
                         addStr += 'border';
-                        if(prop && prop != 'width'){
+                        if(prop2){
                             addStr += '-';
-                            addStr += prop;
+                            addStr += prop1;
+                            addStr += '-';
+                            addStr += prop2;
                         }
-                        addStr += '-';
-                        addStr += 'width';
+                        else if(prop1 && prop1 != 'width'){
+                            addStr += '-';
+                            addStr += prop1;
+                        }
+
+                        if(!prop2){
+                            addStr += '-';
+                            addStr += 'width';
+                        }
                         addStr += ':';
                         addStr += width/2;
                         addStr += 'px;';
@@ -57,7 +68,8 @@ function gulpCssHairline(option){
                     }
                 }
             });
-            content += addText.join('');
+            content += addText.join('\n');
+            console.log(content);
             file.contents = new Buffer(content);
             self.push(file);
             return cb();

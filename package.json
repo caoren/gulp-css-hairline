@@ -23,5 +23,10 @@
   "bugs": {
     "url": "https://github.com/caoren/gulp-css-hairline/issues"
   },
-  "homepage": "https://github.com/caoren/gulp-css-hairline"
+  "homepage": "https://github.com/caoren/gulp-css-hairline",
+  "devDependencies": {
+    "gulp-util": "^3.0.6",
+    "through2": "^2.0.0",
+    "vinyl-fs": "^1.0.0"
+  }
 }
