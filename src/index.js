@@ -3,6 +3,7 @@ var gutil = require('gulp-util');
 var through = require('through2');
 
 var regBorder = /([\s\S]*?)\{[\s\S]*border-?(width|left|right|bottom|top)?-?(width)?\s*:\s*(.*);(?!.*\/\*hairline:skip\*\/)/i;
+var regComment = /(?:\/\*[\s\S]*?\*\/)*/g;
 var regSpace = /\s/g;
 var regWidth = /(\d+)px/i;
 
@@ -19,6 +20,14 @@ function gulpCssHairline(option){
         }
         if(file.isBuffer()){
             var content  = file.contents.toString();
+            //过滤注释，方式注释中的样式
+            content = content.replace(regComment,function(str){
+                if(str != '/*hairline:skip*/'){
+                    return ''
+                }
+                return str;
+            });
+
             var contentArr = content.split('}');
             var tteam;
             var cls;
@@ -69,7 +78,7 @@ function gulpCssHairline(option){
                 }
             });
             content += addText.join('\n');
-            console.log(content);
+
             file.contents = new Buffer(content);
             self.push(file);
             return cb();

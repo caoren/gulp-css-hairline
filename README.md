@@ -30,5 +30,14 @@ Default value: `hairline`
 
 Note: html's className.
 
+## Ignore a specific style
+
+You can ignore a style with a comment `/*hairline:skip*/`.
+```css
+.ignored{
+  border:1px #000 solid; /*hairline:skip*/
+}
+```
+
 ## License
 Copyright (c) 2015 [Cao Ren](https://github.com/caoren) under the MIT License.
