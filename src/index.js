@@ -20,7 +20,7 @@ function gulpCssHairline(option){
         }
         if(file.isBuffer()){
             var content  = file.contents.toString();
-            //过滤注释，方式注释中的样式
+            //过滤注释，防止注释中的样式
             content = content.replace(regComment,function(str){
                 if(str != '/*hairline:skip*/'){
                     return ''
