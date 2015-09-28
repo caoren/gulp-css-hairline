@@ -2,6 +2,7 @@
 
 > Dispose with the CSS border pixels, refer to [CSS retina hairline](http://dieulot.net/css-retina-hairline)
 
+[![Build Status](https://travis-ci.org/caoren/gulp-css-hairline.png)](https://travis-ci.org/caoren/gulp-css-hairline)
 
 ## Install
 

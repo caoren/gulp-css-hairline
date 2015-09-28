@@ -62,7 +62,11 @@
   margin-bottom: 10px;
 }
 .spm-cont {
-  border-top: 1px #e5e5e5 solid;/*hairline:skip*/
+  border-top: 1px #e5e5e5 solid; /*hairline:skip*/
+  display: -webkit-box;
+}
+.spm-cont .spm-p{
+  border-top: 1px #e5e5e5 solid;
   display: -webkit-box;
 }
 /*

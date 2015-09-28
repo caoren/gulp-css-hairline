@@ -4,7 +4,7 @@ var through = require('through2');
 
 var regBorder = /([\s\S]*?)\{[\s\S]*border-?(width|left|right|bottom|top)?-?(width)?\s*:\s*(.*);(?!.*\/\*hairline:skip\*\/)/i;
 var regComment = /(?:\/\*[\s\S]*?\*\/)*/g;
-var regSpace = /\s/g;
+var regWrap = /[\n\r]+/g;
 var regWidth = /(\d+)px/i;
 
 function gulpCssHairline(option){
@@ -40,7 +40,8 @@ function gulpCssHairline(option){
                 tteam = item.match(regBorder);
                 if(tteam != null){
                     //.xxx , .yyy
-                    cls = tteam[1].replace(regSpace,'').split(',');
+                    cls = tteam[1].replace(regWrap,'').split(',');
+                    //console.log(cls);
                     cls = cls.map(function(item,index){
                         return htmlCls + ' ' + item;
                     });
