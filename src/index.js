@@ -2,10 +2,14 @@
 var gutil = require('gulp-util');
 var through = require('through2');
 
-var regBorder = /([\s\S]*?)\{[\s\S]*border-?(width|left|right|bottom|top)?-?(width)?\s*:\s*(.*);(?!.*\/\*hairline:skip\*\/)/i;
+var regBorderGroup = /([\s\S]*?)\{[\s\S]*border-?(width|left|right|bottom|top)?-?(width)?\s*:\s*(.*);(?!.*\/\*hairline:skip\*\/)/i;
+var regBorderArr = /border-?(width|left|right|bottom|top)?-?(width)?\s*:\s*(.*);(?!.*\/\*hairline:skip\*\/)/gi;
+var regBorder = /border-?(width|left|right|bottom|top)?-?(width)?\s*:\s*(.*)/i;
 var regComment = /(?:\/\*[\s\S]*?\*\/)*/g;
 var regWrap = /[\n\r]+/g;
 var regWidth = /(\d+)px/i;
+var regWidthRp = /(\d+)(px)?/gi;
+
 
 function gulpCssHairline(option){
     option = option || {};
@@ -13,7 +17,7 @@ function gulpCssHairline(option){
     htmlCls = '.' + htmlCls;
     var stream = through.obj(function(file,enc,cb){
         var self = this;
-        //如果文件为空，不做任何处理，直接转入下一个操作
+        //file null ,next
         if(file.isNull()){
             self.push(file);
             return cd();
@@ -30,6 +34,8 @@ function gulpCssHairline(option){
 
             var contentArr = content.split('}');
             var tteam;
+            var subtteam;
+            var stteam;
             var cls;
             var prop1;
             var prop2;
@@ -37,45 +43,56 @@ function gulpCssHairline(option){
             var addStr;
             var addText = [];
             contentArr.forEach(function(item,index){
-                tteam = item.match(regBorder);
+                tteam = item.match(regBorderGroup);
+                //先获取包含border的每组样式
                 if(tteam != null){
                     //.xxx , .yyy
                     cls = tteam[1].replace(regWrap,'').split(',');
-                    //console.log(cls);
                     cls = cls.map(function(item,index){
                         return htmlCls + ' ' + item;
                     });
-                    //undefined,width,top,bottom,left,right
-                    prop1 = tteam[2];
-                    prop2 = tteam[3];
-                    width = tteam[4].match(regWidth);
-                    width = width != null ? parseInt(width[1],10) : 0;
-                    // 0px do nothing
-                    if(width >= 1){
-                        addStr = cls.join(',');
-                        addStr += '{';
-                        addStr += 'border';
-                        if(prop2){
-                            addStr += '-';
-                            addStr += prop1;
-                            addStr += '-';
-                            addStr += prop2;
-                        }
-                        else if(prop1 && prop1 != 'width'){
-                            addStr += '-';
-                            addStr += prop1;
-                        }
 
-                        if(!prop2){
-                            addStr += '-';
-                            addStr += 'width';
+                    addStr = cls.join(',');
+                    addStr += '{';
+                    addStr += '\n';
+                    //在每组样式中获取有多少个border
+                    subtteam = tteam[0].match(regBorderArr);
+                    subtteam.forEach(function(item,index){
+                        stteam = item.match(regBorder);
+                        //undefined,width,top,bottom,left,right
+                        prop1 = stteam[1];
+                        prop2 = stteam[2];
+                        width = stteam[3].match(regWidth);
+                        width = width != null ? parseInt(width[1],10) : 0;
+                        if(prop1 && prop1 == 'width'){
+                            width = stteam[3].match(regWidthRp);
                         }
-                        addStr += ':';
-                        addStr += width/2;
-                        addStr += 'px;';
-                        addStr += '}';
-                        addText.push(addStr);
-                    }
+                        if(width != null && width != 0){
+                            addStr += '  border';
+                            if(prop1){
+                                addStr += '-';
+                                addStr += prop1;
+                            }
+                            if(!prop1 || prop1 != 'width'){
+                                addStr += '-';
+                                addStr += 'width';
+                            }
+                            addStr += ': ';
+                            if(Array.isArray(width)){
+                                width.forEach(function(item,index){
+                                    addStr += parseInt(item,10)/2;
+                                    addStr += 'px ';
+                                });
+                            }
+                            else if(typeof width == 'number'){
+                                addStr += width/2;
+                                addStr += 'px';
+                            }
+                            addStr += ';\n';
+                        }
+                    });
+                    addStr += '}';
+                    addText.push(addStr);
                 }
             });
             content += addText.join('\n');
