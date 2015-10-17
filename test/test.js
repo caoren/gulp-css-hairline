@@ -42,7 +42,7 @@ describe('gulp-css-hairline', function () {
                 // make sure it came out the same way it went in
                 assert(file.isBuffer());
                 // check the contents
-                assert.equal(file.contents.toString('utf8'), '.sig-navbar{height:44px;border-bottom:1px #49c06c solid;z-index:20;}.hairline .sig-navbar{border-bottom-width:0.5px;}');
+                assert.equal(file.contents.toString('utf8'), '.sig-navbar{height:44px;border-bottom:1px #49c06c solid;z-index:20;}.hairline .sig-navbar{\n  border-bottom-width: 0.5px;\n}');
                 done();
             });
         });
