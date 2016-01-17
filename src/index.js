@@ -5,10 +5,11 @@ var through = require('through2');
 var regBorderGroup = /([\s\S]*?)\{[\s\S]*border-?(width|left|right|bottom|top)?-?(width)?\s*:\s*(.*);(?!.*\/\*hairline:skip\*\/)/i;
 var regBorderArr = /border-?(width|left|right|bottom|top)?-?(width)?\s*:\s*(.*);(?!.*\/\*hairline:skip\*\/)/gi;
 var regBorder = /border-?(width|left|right|bottom|top)?-?(width)?\s*:\s*(.*)/i;
-var regComment = /(?:\/\*[\s\S]*?\*\/)*/g;
+var regComment = /(\/\*([\s\S]*?)\*\/|([^:]|^)\/\/(.*)$)/mg;///(?:\/\*[\s\S]*?\*\/)*/g;
 var regWrap = /[\n\r]+/g;
 var regWidth = /(\d+)px/i;
 var regWidthRp = /(\d+)(px)?/gi;
+var HAIRCOMMENT = '/*hairline:skip*/';
 
 
 function gulpCssHairline(option){
@@ -26,11 +27,24 @@ function gulpCssHairline(option){
             var content  = file.contents.toString();
             //过滤注释，防止注释中的样式
             content = content.replace(regComment,function(str){
-                if(str != '/*hairline:skip*/'){
+                if(str != HAIRCOMMENT){
                     return ''
                 }
                 return str;
             });
+            //less处理的css会把注释换行导致正则匹配有问题，此处去除这个多余的换行
+            var contentComment = content.split(HAIRCOMMENT);
+            var replaceAfter = [];
+            contentComment.forEach(function(item,index){
+                if(index < contentComment.length - 1){
+                    replaceAfter.push(item.replace(/[\n\s]+$/g,""));
+                }
+                else{
+                    replaceAfter.push(item);
+                }
+            });
+            content = replaceAfter.join(HAIRCOMMENT);
+
 
             var contentArr = content.split('}');
             var tteam;
